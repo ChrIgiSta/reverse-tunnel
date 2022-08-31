@@ -8,7 +8,7 @@ import (
 	"log"
 	"net"
 	"net/http"
-	"strconv"
+	"net/url"
 	"time"
 
 	"github.com/gorilla/websocket"
@@ -102,10 +102,12 @@ func (agent *Agent) Start(ctx context.Context) error {
 	// message. We then call back server to create another WebSocket channel
 	// for tunneling the connection (in Agent.tunnel function).
 
-	url := agent.gatewayURL + "/" + agent.service.Protocol + "/" + strconv.Itoa(agent.service.Port)
+	// url := agent.gatewayURL + "/" + agent.service.Protocol + "/" + strconv.Itoa(agent.service.Port)
+
+	url := url.URL{Scheme: "wss", Host: "elionatest.roche.com" + ":" + "443", Path: "/x/rest-tunnel/"}
 	header := http.Header{}
 	header.Add("Authorization", "Bearer "+agent.key)
-	ws, _, err := dialer.DialContext(ctx, url, header)
+	ws, _, err := dialer.DialContext(ctx, url.String(), header)
 	if err != nil {
 		return err
 	}
